@@ -62,6 +62,7 @@ AutoTask/
 
 - [Python 3.10+](https://www.python.org/)
 - [Selenium 4](https://pypi.org/project/selenium/)
+- [webdriver-manager](https://pypi.org/project/webdriver-manager/)
 - Pandas
 - Google Chrome + ChromeDriver
 
@@ -113,6 +114,7 @@ python main.py
 - Bibliotecas:
   - selenium
   - pandas
+  -webdriver-manager
 
 pandas
 
