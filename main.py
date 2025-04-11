@@ -1,46 +1,30 @@
-import pyautogui
-import pandas as pd
-import time
+from modules.abrir_navegador import abrir_site
+from modules.fazer_login import realizar_login
+from modules.leitura_csv import ler_dados
+from modules.preenchimento_form import preencher_formulario
+from modules.utils import delay, esperar_elemento
+from selenium.webdriver.common.by import By
 
-# Importar a base de produtos
-tabela = pd.read_csv("./src/produtos.csv")
-print(tabela)
 
-pyautogui.PAUSE = 0.5
+def main():
+    # 1. Abrir o navegador e acessar o site
+    driver = abrir_site(
+        "https://dlp.hashtagtreinamentos.com/python/intensivao/login")
 
-# Abrir o chrome e acessar o site https://dlp.hashtagtreinamentos.com/python/intensivao/login
-pyautogui.press("win")
-pyautogui.write("chrome")
-pyautogui.press("enter")
-pyautogui.write("https://dlp.hashtagtreinamentos.com/python/intensivao/login")
-pyautogui.press("enter")
+    # 2. Fazer login automaticamente
+    realizar_login(driver, "teste@email.com", "senha@123")
 
-# Aguardar o carregamento da página
-time.sleep(4)
+    # 3. Ler os dados do CSV
+    dados = ler_dados('./src/data/produtos.csv')
 
-# Realizar login (dados fictícios)
-pyautogui.click(x=-1186, y=413)
-pyautogui.write("teste@email.com")
-pyautogui.press("tab")
-pyautogui.write("senha@123")
-pyautogui.click(x=-969, y=574)
+    # 4. Esperar o campo "codigo" aparecer após login
+    esperar_elemento(driver, By.ID, "codigo")
 
-# Percorre cada linha da tabela, em que para cada linha, cadastra um produto.
-for linha in tabela.index:
-    pyautogui.click(x=-1207, y=298)
-    pyautogui.write(str(tabela.loc[linha, "codigo"]))
-    pyautogui.press("tab")
-    pyautogui.write(str(tabela.loc[linha, "marca"]))
-    pyautogui.press("tab")
-    pyautogui.write(str(tabela.loc[linha, "tipo"]))
-    pyautogui.press("tab")
-    pyautogui.write(str(tabela.loc[linha, "categoria"]))
-    pyautogui.press("tab")
-    pyautogui.write(str(tabela.loc[linha, "preco_unitario"]))
-    pyautogui.press("tab")
-    pyautogui.write(str(tabela.loc[linha, "custo"]))
-    pyautogui.press("tab")
-    if not pd.isna(tabela.loc[linha, "obs"]):
-        pyautogui.write(str(tabela.loc[linha, "obs"]))
-    pyautogui.click(x=-1054, y=953)
-    pyautogui.scroll(5000)
+    # 5. Preencher o formulário com os dados
+    for _, linha in dados.iterrows():
+        preencher_formulario(driver, linha)
+        delay(1)
+
+
+if __name__ == "__main__":
+    main()
